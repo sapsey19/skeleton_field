@@ -12,17 +12,21 @@ public class LivingEntity : MonoBehaviour, IDamageable {
         health = startingHealth;
     }
 
-    public void TakeHit(float damage, RaycastHit ray) {
+    public void TakeHit(float damage, RaycastHit hit) {
+        TakeDamage(damage);
+    }
+
+    public void TakeDamage(float damage) {
         health -= damage;
-        if(health <= 0 && !dead) {
+        if (health <= 0 && !dead) {
             Die();
         }
-    }
+    } 
 
     public void Die() {
         dead = true;
         if (OnDeath != null)
             OnDeath();
-        GameObject.Destroy(gameObject);
+        Destroy(gameObject);
     }
 }

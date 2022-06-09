@@ -127,7 +127,7 @@ MonoBehaviour:
   muzzle: {fileID: 5259877045479893533}
   projectile: {fileID: 5754007711776992791, guid: feb2ae931c702db4daf96031328d74b5,
     type: 3}
-  delay: 300
+  delay: 0.5
   muzzleVelocity: 50
 --- !u!1 &1400680712201321593
 GameObject:
@@ -153,7 +153,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1400680712201321593}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.436}
+  m_LocalPosition: {x: 0, y: 0, z: -0.308}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8053423325807867466}
