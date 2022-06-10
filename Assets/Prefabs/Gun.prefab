@@ -127,7 +127,7 @@ MonoBehaviour:
   muzzle: {fileID: 5259877045479893533}
   projectile: {fileID: 5754007711776992791, guid: feb2ae931c702db4daf96031328d74b5,
     type: 3}
-  delay: 0.5
+  delay: 5
   muzzleVelocity: 50
 --- !u!1 &1400680712201321593
 GameObject:
