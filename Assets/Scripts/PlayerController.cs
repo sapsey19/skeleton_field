@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
 	Rigidbody rb;
 
 	void Start() {
+		//Application.targetFrameRate = 144;
 		rb = GetComponent<Rigidbody>();
 	}
 

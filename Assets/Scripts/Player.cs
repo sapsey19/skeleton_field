@@ -11,7 +11,7 @@ public class Player : LivingEntity {
 	PlayerController controller;
 	GunController gunController;
 
-	public override void Start() {
+	protected override void Start() {
 		base.Start();
 		controller = GetComponent<PlayerController>();
 		gunController = GetComponent<GunController>();
@@ -38,7 +38,11 @@ public class Player : LivingEntity {
 
 		//Weapon input
 		if(Input.GetMouseButton(0)) {
-			gunController.Shoot();
+			gunController.OnTriggerHold();
         }
+
+		if (Input.GetMouseButtonUp(0)) {
+			gunController.OnTriggerRelease();
+		}
 	}
 }

@@ -8,7 +8,7 @@ public class LivingEntity : MonoBehaviour, IDamageable {
 
     public event System.Action OnDeath;
 
-    public virtual void Start() {
+    protected virtual void Start() {
         health = startingHealth;
     }
 

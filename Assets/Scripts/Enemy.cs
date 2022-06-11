@@ -18,7 +18,7 @@ public class Enemy : LivingEntity {
 	Color originalColor;
 
 	float attackDistanceThreshold = .5f;
-	float timeBetweenAttacks = 1;
+	float timeBetweenAttacks = 1f;
 	float damage = 1;
 
 	float nextAttackTime;
@@ -27,7 +27,7 @@ public class Enemy : LivingEntity {
 
 	bool hasTarget;
 
-	public override void Start() {
+	protected override void Start() {
 		base.Start();
 		pathfinder = GetComponent<NavMeshAgent>();
 		skinMaterial = GetComponent<Renderer>().material;
@@ -48,25 +48,30 @@ public class Enemy : LivingEntity {
 		}
 	}
 
-	void Update() {
-		if (hasTarget && Time.time > nextAttackTime) {
-			float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
-			if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)) {
-				nextAttackTime = Time.time + timeBetweenAttacks;
-				StartCoroutine(Attack());
-			}
+	public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection) {
+		if (damage >= health) {
+			Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)), deathEffect.main.startLifetime.constant);
 		}
+		base.TakeHit(damage, hitPoint, hitDirection);
 	}
 
-    public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection) {
-		if (damage >= health) 
-			Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)), deathEffect.main.startLifetime.constant);
-        base.TakeHit(damage, hitPoint, hitDirection);
-    }
-
-    void OnTargetDeath() {
+	void OnTargetDeath() {
 		hasTarget = false;
 		currentState = State.Idle;
+	}
+
+	void Update() {
+
+		if (hasTarget) {
+			if (Time.time > nextAttackTime) {
+				float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
+				if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)) {
+					nextAttackTime = Time.time + timeBetweenAttacks;
+					StartCoroutine(Attack());
+				}
+
+			}
+		}
 	}
 
 	IEnumerator Attack() {
