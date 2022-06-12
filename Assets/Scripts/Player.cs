@@ -13,6 +13,9 @@ public class Player : LivingEntity {
 	PlayerController controller;
 	GunController gunController;
 
+	// threshold at which gun no longer rotates toward cursor 
+	float gunRotateTheshold = 1.18f;
+
 	protected override void Start() {
 		base.Start();
 		Cursor.visible = false;
@@ -30,16 +33,20 @@ public class Player : LivingEntity {
 		//Look input 
 		Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
 		Plane groundPlane = new Plane(Vector3.up, Vector3.up * gunController.GunHeight);
-		float rayDistance;
+        float rayDistance;
 
 		if (groundPlane.Raycast(ray, out rayDistance)) {
 			Vector3 point = ray.GetPoint(rayDistance);
-			Debug.DrawLine(ray.origin, point, Color.red);
+			//Debug.DrawLine(ray.origin, point, Color.red);
 			//Debug.DrawRay(ray.origin,ray.direction * 100,Color.red);
 			controller.LookAt(point);
 			crossHair.transform.position = point;
 			crossHair.DetectTarget(ray);
-		}
+
+            if ((new Vector3(point.x, point.y, point.z) - new Vector3(transform.position.x, transform.position.y, transform.position.z)).sqrMagnitude > Mathf.Pow(gunRotateTheshold, 2)) {
+                gunController.Aim(point);
+            }
+        }
 
 		//Weapon input
 		if(Input.GetMouseButton(0)) {

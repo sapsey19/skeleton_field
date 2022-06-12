@@ -129,16 +129,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec86135898afa346ad42ed21dd86365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireMode: 0
+  fireMode: 1
   projectileSpawn:
   - {fileID: 5259877045479893533}
-  - {fileID: 7860589514042143871}
-  - {fileID: 6146896073077751971}
-  projectile: {fileID: 1544350333276195011, guid: feb2ae931c702db4daf96031328d74b5,
+  projectile: {fileID: -2131127902308023206, guid: 8db1da78ccf641647934eb8defc5e604,
     type: 3}
-  delay: 0.0001
-  muzzleVelocity: 150
+  delay: 250
+  muzzleVelocity: 300
   burstCount: 5
+  recoilMinMax: {x: 0.5, y: 0.2}
+  recoilAngleMinMax: {x: 3, y: 5}
+  recoilReturnTime: 0.1
+  recoilRotationReturnTime: 0.1
   shell: {fileID: 538238887904849554, guid: 3ffda15660789a44787585277a75f11c, type: 3}
   shellEjection: {fileID: 4588965992401747960}
 --- !u!114 &4078666473216835363
@@ -186,13 +188,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1400680712201321593}
-  m_LocalRotation: {x: 0, y: -0.034899585, z: 0, w: 0.99939084}
-  m_LocalPosition: {x: -0.0801, y: 0, z: 0.342}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0008, y: -0.0038, z: 0.204}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 8053423325807867466}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: -4, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1534348249265827448
 GameObject:
   m_ObjectHideFlags: 0

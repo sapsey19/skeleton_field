@@ -470,8 +470,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5945854628088601896}
-  - component: {fileID: 579909501270155713}
   - component: {fileID: 421718906829820993}
+  - component: {fileID: 8796885956649563119}
   m_Layer: 0
   m_Name: Lightning Gun
   m_TagString: Untagged
@@ -497,30 +497,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &579909501270155713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3617845150801298151}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ec86135898afa346ad42ed21dd86365, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fireMode: 0
-  projectileSpawn:
-  - {fileID: 8484426412831621503}
-  - {fileID: 0}
-  - {fileID: 0}
-  projectile: {fileID: 1544350333276195011, guid: feb2ae931c702db4daf96031328d74b5,
-    type: 3}
-  delay: 0.0001
-  muzzleVelocity: 150
-  burstCount: 5
-  shell: {fileID: 538238887904849554, guid: 3ffda15660789a44787585277a75f11c, type: 3}
-  shellEjection: {fileID: 211425988666332314}
 --- !u!114 &421718906829820993
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,6 +519,18 @@ MonoBehaviour:
   - {fileID: 4080019939341210395}
   - {fileID: 497345152508605977}
   flashTime: 0.05
+--- !u!114 &8796885956649563119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3617845150801298151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d9989391f85006418354dc34427f0ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3941753791139600598
 GameObject:
   m_ObjectHideFlags: 0

@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 3876649422056825246}
   - component: {fileID: 7997850450253876207}
   - component: {fileID: 9117540130160786287}
-  - component: {fileID: 1544350333276195011}
   - component: {fileID: 1708155468969376177}
+  - component: {fileID: -2131127902308023206}
   m_Layer: 0
-  m_Name: Bullet
+  m_Name: Chaining Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,24 +95,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1544350333276195011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4253494540588453254}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52e91bf50519d6445a11a91ae932445c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  collisionMask:
-    serializedVersion: 2
-    m_Bits: 1280
-  trailColor: {r: 0.8301887, g: 0.8252872, b: 0.5254902, a: 1}
-  speed: 50
-  damage: 1
 --- !u!96 &1708155468969376177
 TrailRenderer:
   serializedVersion: 2
@@ -219,3 +201,26 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &-2131127902308023206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4253494540588453254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffdd951f8e7e1474482165dc1981f9b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  collisionMask:
+    serializedVersion: 2
+    m_Bits: 1280
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 256
+  trailColor: {r: 1, g: 0.26704967, b: 0, a: 1}
+  speed: 50
+  damage: 1
+  chainNumber: 10000
+  chainRadius: 30000
