@@ -7,12 +7,15 @@ public class Player : LivingEntity {
 
 	public float moveSpeed = 5;
 
+	public Crosshair crossHair;
+
 	Camera viewCamera;
 	PlayerController controller;
 	GunController gunController;
 
 	protected override void Start() {
 		base.Start();
+		Cursor.visible = false;
 		controller = GetComponent<PlayerController>();
 		gunController = GetComponent<GunController>();
 		viewCamera = Camera.main;
@@ -26,7 +29,7 @@ public class Player : LivingEntity {
 
 		//Look input 
 		Ray ray = viewCamera.ScreenPointToRay(Input.mousePosition);
-		Plane groundPlane = new Plane(Vector3.up, transform.position);
+		Plane groundPlane = new Plane(Vector3.up, Vector3.up * gunController.GunHeight);
 		float rayDistance;
 
 		if (groundPlane.Raycast(ray, out rayDistance)) {
@@ -34,6 +37,8 @@ public class Player : LivingEntity {
 			Debug.DrawLine(ray.origin, point, Color.red);
 			//Debug.DrawRay(ray.origin,ray.direction * 100,Color.red);
 			controller.LookAt(point);
+			crossHair.transform.position = point;
+			crossHair.DetectTarget(ray);
 		}
 
 		//Weapon input

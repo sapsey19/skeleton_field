@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour {
 
+    public bool devMode;
+
     public Wave[] waves;
     public Enemy enemy;
 
@@ -28,6 +30,8 @@ public class Spawner : MonoBehaviour {
 
     public event System.Action<int> OnNewWave;
 
+    Coroutine spawnEnemyCoroutine = null;
+
     private void Start() {
         playerEntity = FindObjectOfType<Player>();
         playerT = playerEntity.transform;
@@ -49,11 +53,20 @@ public class Spawner : MonoBehaviour {
                 campPositionOld = playerT.position;
             }
 
-            if (enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime) {
+            if ((enemiesRemainingToSpawn > 0 || currentWave.infinite) && Time.time > nextSpawnTime) {
                 enemiesRemainingToSpawn--;
                 nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
 
-                StartCoroutine(SpawnEnemy());
+                spawnEnemyCoroutine = StartCoroutine(SpawnEnemy());
+            }
+        }
+        if(devMode) {
+            if(Input.GetKeyDown(KeyCode.Return)) {
+                StopCoroutine(spawnEnemyCoroutine);
+                foreach(Enemy enemy in FindObjectsOfType<Enemy>()) {
+                    Destroy(enemy.gameObject);
+                }
+                NextWave();
             }
         }
     }
@@ -78,7 +91,9 @@ public class Spawner : MonoBehaviour {
             yield return null;
         }
         Enemy spawnedEnemy = Instantiate(enemy, spawnTile.position + Vector3.up, Quaternion.identity);
+        tileMat.color = initialColor;
         spawnedEnemy.OnDeath += OnEnemyDeath;
+        spawnedEnemy.SetCharacteristics(currentWave.moveSpeed, currentWave.hitsToKillPlayer, currentWave.health, currentWave.skinColor);
     }
 
     private void OnPlayerDeath() {
@@ -113,9 +128,13 @@ public class Spawner : MonoBehaviour {
 
     [System.Serializable]
     public class Wave {
-        
+        public bool infinite;
         public int enemyCount;
         public float timeBetweenSpawns;
 
+        public float moveSpeed;
+        public int hitsToKillPlayer;
+        public float health;
+        public Color skinColor;
     }
 }

@@ -13,10 +13,6 @@ public class Shell : MonoBehaviour {
     Player player;
 
     private void Start() {
-        // this is slow 
-        //player = FindObjectOfType<Player>();
-        //Physics.IgnoreCollision(GetComponent<Collider>(), player.GetComponent<Collider>());
-
         float force = Random.Range(forceMin, forceMax);
         myRigidbody.AddForce(transform.right * force);
         myRigidbody.AddTorque(Random.insideUnitSphere * force);
