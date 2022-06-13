@@ -129,13 +129,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ec86135898afa346ad42ed21dd86365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fireMode: 1
+  fireMode: 0
   projectileSpawn:
   - {fileID: 5259877045479893533}
   projectile: {fileID: -2131127902308023206, guid: 8db1da78ccf641647934eb8defc5e604,
     type: 3}
   delay: 250
-  muzzleVelocity: 300
+  muzzleVelocity: 50
   burstCount: 5
   recoilMinMax: {x: 0.5, y: 0.2}
   recoilAngleMinMax: {x: 3, y: 5}
@@ -143,6 +143,7 @@ MonoBehaviour:
   recoilRotationReturnTime: 0.1
   shell: {fileID: 538238887904849554, guid: 3ffda15660789a44787585277a75f11c, type: 3}
   shellEjection: {fileID: 4588965992401747960}
+  shootAudio: {fileID: 8300000, guid: a5bb334f88bdc4a46b308c5f944c964b, type: 3}
 --- !u!114 &4078666473216835363
 MonoBehaviour:
   m_ObjectHideFlags: 0

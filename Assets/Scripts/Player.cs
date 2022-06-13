@@ -19,12 +19,20 @@ public class Player : LivingEntity {
 	protected override void Start() {
 		base.Start();
 		Cursor.visible = false;
+	}
+
+
+    private void Awake() {
 		controller = GetComponent<PlayerController>();
 		gunController = GetComponent<GunController>();
 		viewCamera = Camera.main;
 	}
 
-	void Update() {
+	void OnNewWave(int waveNumber) {
+		health = startingHealth;
+    }
+
+    void Update() {
 		//Movement input
 		Vector3 moveInput = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
 		Vector3 moveVelocity = moveInput.normalized * moveSpeed;
@@ -57,4 +65,9 @@ public class Player : LivingEntity {
 			gunController.OnTriggerRelease();
 		}
 	}
+
+    public override void Die() {
+		AudioManager.instance.PlaySound("Player Death", transform.position);
+        base.Die();
+    }
 }

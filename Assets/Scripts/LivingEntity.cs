@@ -24,7 +24,7 @@ public class LivingEntity : MonoBehaviour, IDamageable {
     } 
 
     [ContextMenu("NOW!")]
-    public void Die() {
+    public virtual void Die() {
         dead = true;
         if (OnDeath != null)
             OnDeath();

@@ -24,6 +24,7 @@ public class Gun : MonoBehaviour {
     public Transform shell;
     public Transform shellEjection;
     MuzzleFlash muzzleFlash;
+    public AudioClip shootAudio;
 
     float nextShotTime;
 
@@ -69,6 +70,8 @@ public class Gun : MonoBehaviour {
             transform.localPosition -= Vector3.forward * Random.Range(recoilMinMax.x, recoilMinMax.y);
             recoilAngle += Random.Range(recoilAngleMinMax.x, recoilAngleMinMax.y);
             recoilAngle = Mathf.Clamp(recoilAngle, 0, 30);
+
+            AudioManager.instance.PlaySound(shootAudio, transform.position);
         } 
     }
 

@@ -12,10 +12,11 @@ public class ChainingBullet : MonoBehaviour {
     public int chainNumber;
     public float chainRadius;
 
-    float lifeTime = 10;
+    float lifeTime = 1000;
     float hitBox = .1f;
 
     List<int> hitEnemyIds;
+    Transform closestEnemyTarget = null;
  
     private void Start() {
         Destroy(gameObject, lifeTime);
@@ -34,6 +35,9 @@ public class ChainingBullet : MonoBehaviour {
         float moveDistance = speed * Time.deltaTime;
         CheckCollisions(moveDistance);
         transform.Translate(Vector3.forward * moveDistance);
+
+        if(closestEnemyTarget != null)
+            gameObject.transform.LookAt(closestEnemyTarget.position);
     }
 
     public void SetSpeed(float newSpeed) {
@@ -85,6 +89,7 @@ public class ChainingBullet : MonoBehaviour {
             hitEnemyIds.Clear();
             return;
         }
+        closestEnemyTarget = closestEnemy;
         gameObject.transform.LookAt(closestEnemy.position);
         chainNumber--;
     }

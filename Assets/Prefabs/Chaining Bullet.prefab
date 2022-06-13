@@ -29,7 +29,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4253494540588453254}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -38.1586, y: 0.4523, z: 12.178}
+  m_LocalPosition: {x: -38.1586, y: 0.4523, z: 11.684}
   m_LocalScale: {x: 0.084689245, y: 0.084689245, z: 0.1635688}
   m_Children: []
   m_Father: {fileID: 0}
@@ -222,5 +222,5 @@ MonoBehaviour:
   trailColor: {r: 1, g: 0.26704967, b: 0, a: 1}
   speed: 50
   damage: 1
-  chainNumber: 10000
+  chainNumber: 1000000
   chainRadius: 30000

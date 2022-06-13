@@ -14,6 +14,7 @@ public class Enemy : LivingEntity {
 	Transform target;
 	LivingEntity targetEntity;
 	Material skinMaterial;
+	Material originalMaterial;
 
 	Color originalColor;
 
@@ -27,8 +28,10 @@ public class Enemy : LivingEntity {
 
 	bool hasTarget;
 
+
     private void Awake() {
 		pathfinder = GetComponent<NavMeshAgent>();
+		originalMaterial = skinMaterial;
 
 		if (GameObject.FindGameObjectWithTag("Player") != null) {
 			hasTarget = true;
@@ -66,7 +69,9 @@ public class Enemy : LivingEntity {
 	}
 
 	public override void TakeHit(float damage, Vector3 hitPoint, Vector3 hitDirection) {
+		AudioManager.instance.PlaySound("Impact", transform.position);
 		if (damage >= health) {
+			AudioManager.instance.PlaySound("Enemy Death", transform.position);
 			deathEffect.GetComponent<ParticleSystemRenderer>().material = skinMaterial;
 			Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)), deathEffect.main.startLifetime.constant);
 		}
@@ -84,6 +89,7 @@ public class Enemy : LivingEntity {
 				float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
 				if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)) {
 					nextAttackTime = Time.time + timeBetweenAttacks;
+					AudioManager.instance.PlaySound("Enemy Attack", transform.position);
 					StartCoroutine(Attack());
 				}
 
