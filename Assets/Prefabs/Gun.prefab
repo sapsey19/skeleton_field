@@ -137,6 +137,9 @@ MonoBehaviour:
   delay: 250
   muzzleVelocity: 50
   burstCount: 5
+  isLightning: 1
+  lightningPrefab: {fileID: 7420082628279724447, guid: c0c24d67ada37184494e09e8e74cea8b,
+    type: 3}
   recoilMinMax: {x: 0.5, y: 0.2}
   recoilAngleMinMax: {x: 3, y: 5}
   recoilReturnTime: 0.1

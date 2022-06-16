@@ -64,6 +64,10 @@ public class Player : LivingEntity {
 		if (Input.GetMouseButtonUp(0)) {
 			gunController.OnTriggerRelease();
 		}
+
+		if(transform.position.y < -10) {
+			TakeDamage(health);
+        } 
 	}
 
     public override void Die() {

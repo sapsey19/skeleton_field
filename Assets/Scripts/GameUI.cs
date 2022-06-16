@@ -12,6 +12,7 @@ public class GameUI : MonoBehaviour {
     public Text newWaveTitle;
     public Text newWaveEnemyCount;
     public Text scoreUI;
+    public Text gameOverScoreUI;
     public RectTransform healthBar;
 
     Spawner spawner;
@@ -71,9 +72,12 @@ public class GameUI : MonoBehaviour {
     }
 
     void OnGameOver() {
-        StartCoroutine(Fade(Color.clear, Color.black, 1));
-        gameOverUI.SetActive(true);
         Cursor.visible = true;
+        StartCoroutine(Fade(Color.clear, new Color(0, 0, 0, .85f), 1));
+        gameOverScoreUI.text = scoreUI.text;
+        scoreUI.gameObject.SetActive(false);
+        healthBar.transform.parent.gameObject.SetActive(false);
+        gameOverUI.SetActive(true);
     }
 
     IEnumerator Fade(Color from, Color to, float time) {
@@ -90,5 +94,9 @@ public class GameUI : MonoBehaviour {
     // UI Input 
     public void StartNewGame() {
         SceneManager.LoadScene("SampleScene");
+    }
+
+    public void ReturnToMainMenu() {
+        SceneManager.LoadScene("Menu");
     }
 }

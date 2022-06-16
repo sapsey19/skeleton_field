@@ -223,4 +223,4 @@ MonoBehaviour:
   speed: 50
   damage: 1
   chainNumber: 1000000
-  chainRadius: 30000
+  chainRadius: 20

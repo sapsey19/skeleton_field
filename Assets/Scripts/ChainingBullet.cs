@@ -12,7 +12,7 @@ public class ChainingBullet : MonoBehaviour {
     public int chainNumber;
     public float chainRadius;
 
-    float lifeTime = 1000;
+    float lifeTime = 10000;
     float hitBox = .1f;
 
     List<int> hitEnemyIds;
