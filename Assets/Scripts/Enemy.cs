@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class Enemy : LivingEntity {
@@ -149,5 +150,26 @@ public class Enemy : LivingEntity {
 			}
 			yield return new WaitForSeconds(refreshRate);
 		}
+	}
+
+	public Vector3 FindClosestEnemy(float chainRadius) {
+		Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, chainRadius, gameObject.layer);
+
+		float min = 10000f;
+
+		Transform closestEnemy = null;
+		Debug.Log("before here");
+		foreach (Collider c in nearbyEnemies) {
+			if (gameObject.GetInstanceID() != c.gameObject.GetInstanceID()) {
+				Debug.Log("here");
+				float distance = Vector3.Distance(transform.position, c.transform.position);
+				if (distance < min && distance > .01f) {
+					min = distance;
+					closestEnemy = c.transform;
+					//Debug.Log("distance: " + distance);
+				}
+			}
+		}
+		return closestEnemy.position;
 	}
 }
