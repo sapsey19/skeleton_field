@@ -49,7 +49,6 @@ public class ChainingBullet : MonoBehaviour {
 
         if (Physics.Raycast(ray, out RaycastHit hit, moveDistance + hitBox, collisionMask, QueryTriggerInteraction.Collide)) {
             OnHitObject(hit.collider, hit.point);
-            Debug.Log("Hit");
         }
     }
 
@@ -71,7 +70,6 @@ public class ChainingBullet : MonoBehaviour {
         Collider[] nearbyEnemies = Physics.OverlapSphere(hitPoint, chainRadius, enemyMask);
     
         float min = 10000f;
-        //int i = 0;
 
         Transform closestEnemy = null;
 
@@ -82,7 +80,6 @@ public class ChainingBullet : MonoBehaviour {
                     min = distance;
                     closestEnemy = c.transform;
                 }
-                //i++;
             }
         }
         if (closestEnemy == null) {

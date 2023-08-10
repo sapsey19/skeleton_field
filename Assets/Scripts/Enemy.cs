@@ -33,7 +33,7 @@ public class Enemy : LivingEntity {
 	//lightning damage
 	public bool isHit;  //only used for debugging in instor 
 	public bool isChaining { get; set; }
-	public bool isLightning { get; set; }
+	public float lightningDamageReceived;
 	
 
     private void Awake() {
@@ -96,9 +96,7 @@ public class Enemy : LivingEntity {
 	}
 
 	void Update() {
-        isHit = isChaining;
-
-        if (hasTarget) {
+		if (hasTarget) {
 			if (Time.time > nextAttackTime) {
 				float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
 				if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)) {
@@ -109,13 +107,15 @@ public class Enemy : LivingEntity {
 
 			}
 		}
-
-		if(isChaining) { //need to include enemy that's getting hit directly 
-			TakeDamage(.1f);
-		}
 	}
 
-	IEnumerator Attack() {
+    private void FixedUpdate() {
+        if(isChaining) {
+			TakeDamage(lightningDamageReceived);
+		}
+    }
+
+    IEnumerator Attack() {
 
 		currentState = State.Attacking;
 		pathfinder.enabled = false;

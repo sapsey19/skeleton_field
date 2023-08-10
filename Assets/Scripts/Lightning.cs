@@ -1,211 +1,177 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.Analytics;
 
-[RequireComponent(typeof(LineRenderer))]
 public class Lightning : MonoBehaviour {
-
     public LayerMask enemyMask;
 
-    public Transform weaponPosition; //weapon position
-    public Transform cursorPosition; //cursor position
-    public float chainRadius;
+    public Transform weapon; 
+    public Transform cursor; 
 
-    Transform enemyPosition;    //enemy position
-    List<int> enemyIDs = new List<int>();
-    Enemy enemy;
+    private Enemy directHitEnemy;
+
+    public float chainRadius;     //how close enemies must be to chain off of 
+
 
     [SerializeField]
-    List<Vector3> chainPoints = new List<Vector3>(); //list of chain points for lightning chain effect 
+    private List<Enemy> chainEnemies = new List<Enemy>(); //list of chain points for lightning chain effect. maybe use linkedList? 
 
-    bool hittingEnemy;
-    bool firing;
+    private bool hittingEnemy;
+    private bool firing;
 
-    LineRenderer lr;
-    MeshCollider meshCollider;
+    private LineRenderer lr;
+    private MeshCollider coneHitbox;
 
-    List<Collider> colliders = new List<Collider>();
-    List<int> hitEnemyIds = new List<int>();
+    private List<Collider> colliders = new List<Collider>();
 
-    public List<Collider> GetColliders() { return colliders; }
+    private List<Collider> GetColliders() { return colliders; }
+
+    private int chainNum;
+    public int maxChains;
 
     private void Start() {
-        meshCollider = gameObject.GetComponent<MeshCollider>();
-        meshCollider.enabled = false;
+        coneHitbox = gameObject.GetComponent<MeshCollider>();
+        coneHitbox.enabled = false;
 
         lr = GetComponent<LineRenderer>();
         lr.enabled = false;
-
-        enemyPosition = null;
+        //chainNum = maxChains;
     }
 
     private void Update() {
-        if (Input.GetMouseButton(0)) {
-            meshCollider.enabled = true;
-            firing = true;
 
+        if (Input.GetMouseButton(0)) {
+            coneHitbox.enabled = true;
+            firing = true;
         }
         if (Input.GetMouseButtonUp(0)) {
-            meshCollider.enabled = false;
+            hittingEnemy= false;
+            coneHitbox.enabled = false;
             lr.enabled = false;
             firing = false;
             colliders.Clear();
-            enemyIDs.Clear();
-            chainPoints.Clear();
+            ResetChain();
         }
 
-        // Lightning latches on to nearest enemy in hitbox
-        //FindClosestEnemyInHitbox();
-    }
-
-    private void LateUpdate() {
         if (firing) {
-            if (hittingEnemy) {
-                //DrawCurvedLine();
-                FindClosestEnemyInHitbox();
-                DrawLineToEnemy();
-                //FindClosestEnemy();
-                //if (enemy != null && enemy.FindClosestEnemy(chainRadius) != null) {
-                //    chainPoints.Add(enemy.FindClosestEnemy(chainRadius));
-                //}
+            // Lightning latches on to nearest enemy in hitbox
+            directHitEnemy = FindClosestEnemyInHitbox();
 
-                ChainToEnemies();
-                //Chain();
+            if (hittingEnemy && directHitEnemy) {
+                DrawCurvedLine(weapon.position, cursor.position, directHitEnemy.transform.position);
+
+                directHitEnemy.isChaining = true;
+                
+                //chain off of all points in chainPoints
+                Chain(directHitEnemy);
+                DrawChains();
             }
             else {
-                chainPoints.Clear();
-                enemyPosition = null;
-                DrawLine();
+                DrawLine(weapon.position, cursor.position);
+                ResetChain();
+            }
+        }
+
+        //idk why this works but it does 
+        if (directHitEnemy)
+            directHitEnemy.isChaining = false;
+    }
+
+    private void FixedUpdate() {
+        if(directHitEnemy)
+            directHitEnemy.TakeDamage(directHitEnemy.lightningDamageReceived);
+    }
+
+    private void ResetChain() {
+        foreach (Enemy e in chainEnemies) {
+            e.isChaining= false;
+        }
+        chainEnemies.Clear();
+        chainNum = maxChains;
+    }
+
+    //recursive function that finds nearby enemies that are not already getting hit 
+    //Enemy.isChaining prevents lightning from chaining to the same enemy
+    private void Chain(Enemy enemy) {
+        if (enemy == null || chainNum <= 0) {
+            return;
+        }
+
+        Enemy closestEnemy = enemy.FindClosestEnemy(chainRadius, enemyMask);
+
+        if (!closestEnemy) {
+            return;
+        }
+
+        closestEnemy.isChaining = true;
+        chainEnemies.Add(closestEnemy);
+
+        chainNum--;
+        Chain(closestEnemy);
+    }
+
+
+    private void DrawChains() {
+        for (int i = 0; i < chainEnemies.Count(); i++) {
+            if (!chainEnemies[i]) {
+                chainEnemies.RemoveAt(i);
+                lr.positionCount--;
+            }
+            else {
+                lr.positionCount++;
+                //prevents errors when chainEnemies gets cleared 
+                if(lr.positionCount != i+14) {
+                    return;
+                }
+                //offset from Bezier curved line
+                lr.SetPosition(13 + i, chainEnemies[i].transform.position);
             }
         }
     }
 
-    private void FindClosestEnemyInHitbox() {
+    private Enemy FindClosestEnemyInHitbox() {
         List<Collider> inHitboxColliders = GetColliders();
 
-        float min = 10000f;
-        int i = 0;
+        float min = float.MaxValue;
 
         Collider closestEnemy = null;
 
-
         foreach (Collider c in inHitboxColliders) {
-            float distance = Vector3.Distance(weaponPosition.position, c.transform.position);
+            //if collider has been destroyed (enemy killed), skip
+            if (!c) continue;
+            float distance = Vector3.Distance(weapon.position, c.transform.position);
             if (distance < min) {
                 min = distance;
                 closestEnemy = c;
-                i++;
             }
         }
+        if (!closestEnemy) return null;
 
-        if (closestEnemy != null) {
-            enemyIDs.Add(closestEnemy.gameObject.GetInstanceID());
-            enemyPosition = closestEnemy.transform;
-            enemy = closestEnemy.GetComponent<Enemy>();
-        }
+        return closestEnemy.gameObject.GetComponent<Enemy>();
     }
 
-    private void FindNearbyEnemies() {
 
-    }
-
-    private void OnDrawGizmos() {
-        //Debug.Log("on draw gizmos");
-        //if (enemyPosition) {
-        //    Gizmos.DrawSphere(enemyPosition.position, chainRadius);
-        //}
-    }
-
-    private void FindClosestEnemy() {
-        if (enemyPosition == null) {
-            return;
-        }
-        Collider[] nearbyEnemies = Physics.OverlapSphere(enemyPosition.position, chainRadius, enemyMask);
-
-
-        float min = 10000f;
-        int i = 0;
-        int indexOfClosest = 0;
-
-        Transform closestEnemy = null;
-
-        //Debug.Log(nearbyEnemies.Length + " " + point3.position);
-
-        foreach (Collider c in nearbyEnemies) {
-            if (!enemyIDs.Contains(c.gameObject.GetInstanceID())) {
-                //Debug.Log("here");
-                float distance = Vector3.Distance(transform.position, c.transform.position);
-                if (distance < min && distance > .01f) {
-                    min = distance;
-                    closestEnemy = c.transform;
-                    indexOfClosest = i;
-                    //Debug.Log("distance: " + distance);
-
-                }
-                enemyIDs.Add(c.gameObject.GetInstanceID());
-            }
-            i++;
-        }
-
-        //if closest enemy isn't null, and that enemy isn't already being hit
-        if (closestEnemy != null) { // && !enemyIDs.Contains(closestEnemy.gameObject.GetInstanceID())) {
-            chainPoints.Add(closestEnemy.position);
-            Debug.Log("closest enemy to enemy: " + closestEnemy.name);
-            //ChainToEnemies();
-        }
-    }
-
-    private void ChainToEnemies() {
-        for (int i = 0; i < chainPoints.Count; i++) {
-            //Debug.Log("chainPoints count: " + chainPoints.Count);
-            //Debug.Log("position count before: " + lr.positionCount);
-            lr.positionCount++;
-            lr.SetPosition(i + 2, chainPoints[i]);
-            //Debug.Log("position count after: " + lr.positionCount);
-        }
-    }
-
-    private void DrawLine() {
+    private void DrawLine(Vector3 point1, Vector3 point2) {
         lr.enabled = true;
         lr.positionCount = 2;
-        lr.SetPosition(0, weaponPosition.position);
-        lr.SetPosition(1, cursorPosition.position);
+        lr.SetPosition(0, point1);
+        lr.SetPosition(1, point2);
     }
 
-    private void DrawLineToEnemy() {
-        lr.enabled = true;
-        lr.positionCount = 2;
-
-        lr.SetPosition(0, weaponPosition.position);
-
-        if (!enemyPosition) {
-            lr.SetPosition(1, cursorPosition.position);
-            return;
-        }
-
-        lr.SetPosition(1, enemyPosition.position);
-
-    }
-
-    private void DrawCurvedLine() {
+    private void DrawCurvedLine(Vector3 point1, Vector3 point2, Vector3 point3) {
         lr.enabled = true;
         lr.positionCount = 3;
-        lr.SetPosition(0, weaponPosition.position);
-        lr.SetPosition(1, cursorPosition.position);
-        lr.SetPosition(2, enemyPosition.position);
+        lr.SetPosition(0, point1);
+        lr.SetPosition(1, point2);
+        lr.SetPosition(2, point3);
 
-        //BezierCurve();
+        BezierCurve();
 
-        FindClosestEnemy();
-
-        lr.positionCount += chainPoints.Count;
-
-        lr.SetPositions(chainPoints.ToArray());
     }
+
 
     private void OnTriggerStay(Collider other) {
         GameObject hitObject = other.gameObject;
@@ -225,104 +191,21 @@ public class Lightning : MonoBehaviour {
         }
     }
 
+    private void OnDrawGizmos() {
+        if (directHitEnemy) {
+            Gizmos.DrawWireSphere(directHitEnemy.transform.position, chainRadius);
+        }
+    }
+
     private void BezierCurve() {
         List<Vector3> pointList = new List<Vector3>();
         for (float ratio = 0; ratio <= 1; ratio += 1.0f / 12) {
-            //Debug.Log(point1.position + " " + point2.position + " " + point3.position);
-
-            Vector3 tangentLineVertex1 = Vector3.Lerp(weaponPosition.position, cursorPosition.position, ratio);
-            Vector3 tangentLineVertex2 = Vector3.Lerp(cursorPosition.position, enemyPosition.position, ratio);
+            Vector3 tangentLineVertex1 = Vector3.Lerp(weapon.position, cursor.position, ratio);
+            Vector3 tangentLineVertex2 = Vector3.Lerp(cursor.position, directHitEnemy.transform.position, ratio);
             Vector3 bezierPoint = Vector3.Lerp(tangentLineVertex1, tangentLineVertex2, ratio);
             pointList.Add(bezierPoint);
         }
         lr.positionCount = pointList.Count;
         lr.SetPositions(pointList.ToArray());
     }
-
-
-    //Taylor code (oh god) 
-
-
-    //private Collider FindClosestEnemy(Vector3 enemyPosition) {
-    //    if (enemyPosition == null) {
-    //        return null;
-    //    }
-    //    Collider[] nearbyEnemies = Physics.OverlapSphere(enemyPosition, chainRadius, enemyMask);
-
-
-    //    float min = 10000f;
-    //    int i = 0;
-    //    int indexOfClosest = 0;
-
-    //    Collider closestEnemy = null;
-
-    //    //Debug.Log(nearbyEnemies.Length + " " + point3.position);
-
-    //    foreach (Collider c in nearbyEnemies) {
-    //        if (!enemyIDs.Contains(c.gameObject.GetInstanceID())) {
-    //            //Debug.Log("here");
-    //            float distance = Vector3.Distance(transform.position, c.transform.position);
-    //            if (distance < min && distance > .01f) {
-    //                min = distance;
-    //                closestEnemy = c;
-    //                indexOfClosest = i;
-    //                //Debug.Log("distance: " + distance);
-
-    //            }
-    //            enemyIDs.Add(c.gameObject.GetInstanceID());
-    //        }
-    //        i++;
-    //    }
-
-    //    return closestEnemy;
-    //}
-
-    //// Chain lightning to surrounding enemies
-    //private void Chain(Collider enemy) {
-    //    if (enemy == null) {
-    //        return;
-    //    }
-
-    //    Collider closestEnemy = FindClosestEnemy(enemy.transform.position);
-    //    if (!closestEnemy) {
-    //        return;
-    //    }
-
-    //    hitEnemyIds.Add(closestEnemy.gameObject.GetInstanceID());
-    //    chainPoints.Add(closestEnemy.transform.position);
-
-    //    lr.positionCount = chainPoints.Count;
-    //    lr.SetPositions(chainPoints.ToArray());
-    //    DrawLine();
-    //    Chain(closestEnemy);
-    //}
-
-    //private Collider FindClosestEnemyInHitboxReturn() {
-    //    List<Collider> inHitboxColliders = GetColliders();
-
-    //    float min = 10000f;
-    //    int i = 0;
-
-    //    Collider closestEnemy = null;
-
-
-    //    foreach (Collider c in inHitboxColliders) {
-    //        float distance = Vector3.Distance(weaponPosition.position, c.transform.position);
-    //        if (distance < min) {
-    //            min = distance;
-    //            closestEnemy = c;
-    //            i++;
-    //        }
-    //    }
-
-    //    if (closestEnemy != null) {
-    //        enemyIDs.Add(closestEnemy.gameObject.GetInstanceID());
-    //        enemyPosition = closestEnemy.transform;
-    //        enemy = closestEnemy.GetComponent<Enemy>();
-    //    }
-
-    //    return closestEnemy;
-    //}
-
-
 }

@@ -116,6 +116,8 @@ MonoBehaviour:
   startingHealth: 3
   deathEffect: {fileID: 4750403737639849195, guid: f0777b60583c39849b178fda79593010,
     type: 3}
+  isHit: 0
+  lightningDamageReceived: 0.1
 --- !u!195 &3587799016626133085
 NavMeshAgent:
   m_ObjectHideFlags: 0
