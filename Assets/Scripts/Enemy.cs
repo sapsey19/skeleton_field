@@ -30,6 +30,11 @@ public class Enemy : LivingEntity {
 
 	bool hasTarget;
 
+	//lightning damage
+	public bool isHit;  //only used for debugging in instor 
+	public bool isChaining { get; set; }
+	public bool isLightning { get; set; }
+	
 
     private void Awake() {
 		pathfinder = GetComponent<NavMeshAgent>();
@@ -56,7 +61,7 @@ public class Enemy : LivingEntity {
 		}
 	}
 
-	public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, float health, Color skinColor) {
+    public void SetCharacteristics(float moveSpeed, int hitsToKillPlayer, float health, Color skinColor) {
 		pathfinder.speed = moveSpeed;
 
 		if(hasTarget) {
@@ -87,10 +92,13 @@ public class Enemy : LivingEntity {
 	void OnTargetDeath() {
 		hasTarget = false;
 		currentState = State.Idle;
+		isChaining = false;	
 	}
 
 	void Update() {
-		if (hasTarget) {
+        isHit = isChaining;
+
+        if (hasTarget) {
 			if (Time.time > nextAttackTime) {
 				float sqrDstToTarget = (target.position - transform.position).sqrMagnitude;
 				if (sqrDstToTarget < Mathf.Pow(attackDistanceThreshold + myCollisionRadius + targetCollisionRadius, 2)) {
@@ -100,6 +108,10 @@ public class Enemy : LivingEntity {
 				}
 
 			}
+		}
+
+		if(isChaining) { //need to include enemy that's getting hit directly 
+			TakeDamage(.1f);
 		}
 	}
 
@@ -152,24 +164,24 @@ public class Enemy : LivingEntity {
 		}
 	}
 
-	public Vector3 FindClosestEnemy(float chainRadius) {
-		Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, chainRadius, gameObject.layer);
+	public Enemy FindClosestEnemy(float chainRadius, LayerMask enemyMask) {
+		Collider[] nearbyEnemies = Physics.OverlapSphere(transform.position, chainRadius, enemyMask);
 
 		float min = 10000f;
 
 		Transform closestEnemy = null;
-		Debug.Log("before here");
+
 		foreach (Collider c in nearbyEnemies) {
-			if (gameObject.GetInstanceID() != c.gameObject.GetInstanceID()) {
-				Debug.Log("here");
+			if (gameObject.GetInstanceID() != c.gameObject.GetInstanceID() && !c.GetComponent<Enemy>().isChaining) {
 				float distance = Vector3.Distance(transform.position, c.transform.position);
-				if (distance < min && distance > .01f) {
+				if (distance < min) {
 					min = distance;
 					closestEnemy = c.transform;
-					//Debug.Log("distance: " + distance);
 				}
 			}
 		}
-		return closestEnemy.position;
+		if (!closestEnemy) return null;
+
+		return closestEnemy.GetComponent<Enemy>();
 	}
 }

@@ -6,9 +6,10 @@ public class Electric : MonoBehaviour {
     private LineRenderer lRend;
     public Transform transformPointA;
     public Transform transformPointB;
-    private readonly int pointsCount = 5;
-    private readonly int half = 2;
+    private readonly int pointsCount = 5; //5
+    private readonly int half = 2; //2
     private float randomness;
+    public float randomMod;
     private Vector3[] points;
 
     private readonly int pointIndexA = 0;
@@ -63,9 +64,9 @@ public class Electric : MonoBehaviour {
     private void SetRandomness() {
         for (int i = 0; i < points.Length; i++) {
             if (i != pointIndexA && i != pointIndexE) {
-                points[i].x += Random.Range(-randomness, randomness);
-                points[i].y += Random.Range(-randomness, randomness);
-                points[i].z += Random.Range(-randomness, randomness);
+                points[i].x += Random.Range(-randomness * randomMod, randomness * randomMod);
+                points[i].y += Random.Range(-randomness * randomMod, randomness * randomMod);
+                points[i].z += Random.Range(-randomness * randomMod, randomness * randomMod);
             }
         }
     }

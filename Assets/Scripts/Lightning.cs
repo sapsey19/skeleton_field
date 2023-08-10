@@ -69,9 +69,9 @@ public class Lightning : MonoBehaviour {
                 FindClosestEnemyInHitbox();
                 DrawLineToEnemy();
                 //FindClosestEnemy();
-                if (enemy != null && enemy.FindClosestEnemy(chainRadius) != null) {
-                    chainPoints.Add(enemy.FindClosestEnemy(chainRadius));
-                }
+                //if (enemy != null && enemy.FindClosestEnemy(chainRadius) != null) {
+                //    chainPoints.Add(enemy.FindClosestEnemy(chainRadius));
+                //}
 
                 ChainToEnemies();
                 //Chain();
